@@ -1,5 +1,5 @@
 {
-  "name": "mugen-cli",
+  "name": "@mugen-builders/cli",
   "version": "1.0.0",
   "description": "A Command Line Interface (CLI) tool designed to facilitate sending EIP712 transactions to the Brunodo/Piao sequencer backend",
   "main": "index.js",

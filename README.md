@@ -41,7 +41,7 @@ Ensure you have the following installed before using Mugen-CLI:
 1. Run the following command to install Mugen-CLI globally:
 
    ```bash
-   npm install -g mugen-cli
+   npm install -g @mugen-builders/cli
    ```
 
 ### Installing Mugen-CLI using Github
