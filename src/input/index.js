@@ -5,7 +5,7 @@ const { DEFAULT_WALLETS, NONCE_URL, SEND_TRANSACTION_URL } = require('../default
 const { createWalletClient, http } = require('viem');
 const { privateKeyToAccount } = require('viem/accounts');
 const { foundry } = require('viem/chains');
-
+const { rl } = require('../display/index');
 
 
 /**
