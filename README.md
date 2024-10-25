@@ -36,7 +36,15 @@ Ensure you have the following installed before using Mugen-CLI:
 - NPM or Yarn package manager
 - Brunodo
 
-### Installing Mugen-CLI
+### Installing Mugen-CLI using npm
+
+1. Run the following command to install Mugen-CLI globally:
+
+   ```bash
+   npm install -g mugen-cli
+   ```
+
+### Installing Mugen-CLI using Github
 
 1. Clone the repository:
 

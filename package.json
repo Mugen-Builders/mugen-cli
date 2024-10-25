@@ -1,7 +1,7 @@
 {
   "name": "mugen-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Command Line Interface (CLI) tool designed to facilitate sending EIP712 transactions to the Brunodo/Piao sequencer backend",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
