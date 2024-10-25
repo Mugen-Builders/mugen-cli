@@ -1,0 +1,22 @@
+{
+  "name": "mugen-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/mugen.js"
+  },
+  "bin": {
+    "mugen-cli": "./bin/mugen"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^6.13.4",
+    "kleur": "^4.1.5",
+    "ora": "^8.1.0",
+    "viem": "^2.21.34"
+  }
+}
