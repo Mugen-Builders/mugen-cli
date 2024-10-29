@@ -163,6 +163,15 @@ const get_private_key = (wallet_address) => {
     }
 }
 
+
+/**
+ * Entrypoint function for submiting a transaction signe using an inputed private key
+ * @param {*} private_key wallet private key which the user wants to send the transaction from
+ * @param {*} application_address address of the application contract
+ * @param {*} Input_type type of the input (hex, string)
+ * @param {*} input payload the user wants to send
+ * @returns The result from the send transaction function whcih is the transaction Id.
+ */
 const transact_via_private_key = async (private_key, application_address, Input_type, input) => {
     const wallet_client = get_wallet_client(private_key);
     if (!wallet_client) {
@@ -173,6 +182,14 @@ const transact_via_private_key = async (private_key, application_address, Input_
     return await sendTransaction(wallet_client, application_address, Input_type, input)
 }
 
+/**
+ * Entrypoint function for submiting a transaction signe using an inputed mnemonic key
+ * @param {*} mnemonic Mnemonics for teh wallet which the user wants to send the transaction from
+ * @param {*} application_address address of the application contract
+ * @param {*} Input_type type of the input (hex, string)
+ * @param {*} input payload the user wants to send
+ * @returns The result from the send transaction function whcih is the transaction Id.
+ */
 const transact_via_mnemonic = async (mnemonic, application_address, Input_type, input) => {
     const wallet_client = await wallet_client_froom_mnemonic(mnemonic);
     if (!wallet_client) {
@@ -184,6 +201,14 @@ const transact_via_mnemonic = async (mnemonic, application_address, Input_type, 
 }
 
 
+/**
+ * Entrypoint function for submiting a transaction signe using any of the default foundry wallets
+ * @param {*} wallet_address wallet address which the user wants to send the transaction from
+ * @param {*} application_address address of the application contract
+ * @param {*} Input_type type of the input (hex, string)
+ * @param {*} input payload the user wants to send
+ * @returns The result from the send transaction function whcih is the transaction Id.
+ */
 const transact_via_local = async (wallet_address, application_address, Input_type, input) => {
     let private_key = get_private_key(wallet_address);
     if (!private_key) {
@@ -279,7 +304,16 @@ const parse_input = async (Input_type, input) => {
     }
 }
 
-
+/**
+ * Function to receive input request, then decode the type of wallet a users is requesting 
+ * with and call the appropriate entry point functions
+ * @param {*} wallet wallet implementation choice (mnemonics,  private key, local wallets) which the user wants to send the transaction from
+ * @param {*} application_address address of the application contract
+ * @param {*} Input_type type of the input (hex, string)
+ * @param {*} input payload the user wants to send
+ * @param {*} chain network choice where a transaction should be sent to (local host or  sepolia)
+ * @returns The result from the called entry point function whcih is the transaction Id.
+ */
 const decode_and_relay_tx = async (wallet, application_address, Input_type, input, chain) => {
     switch (chain) {
         case 'foundry':
