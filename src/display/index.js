@@ -1,6 +1,6 @@
 const kleur = require('kleur');
 const readline = require('readline');
-const { DEFAULT_CARTESI_NODE_URL, DEFAULT_WALLETS, DEFAULT_DAPP_ADDRESS } = require('../default');
+const { DEFAULT_CARTESI_NODE_URL, DEFAULT_WALLETS, DEFAULT_DAPP_ADDRESS, DEFAULT_SEPOLIA_URL } = require('../default');
 
 
 // Create readline interface
@@ -26,7 +26,7 @@ function printOptions(options) {
  * @returns chain name
  */
 const askChain = async () => {
-    const chains = ['foundry'];
+    const chains = ['foundry', 'Sepolia'];
     const question = 'Choose a chain: ';
     return await captureKeypressNavigation(question, chains);
 }
@@ -36,9 +36,20 @@ const askChain = async () => {
  * @returns inputed node url
  * 
  */
-const askNodeUrl = async () => {
-    const question = `Enter the node URL: (${kleur.blue(`default: ${DEFAULT_CARTESI_NODE_URL}`)})`;
-    return await askQuestionWithDefault(question, DEFAULT_CARTESI_NODE_URL);
+const askNodeUrl = async (chain) => {
+    let question;
+
+    switch (chain) {
+        case 'foundry':
+            question = `Enter the node URL: (${kleur.blue(`default: ${DEFAULT_CARTESI_NODE_URL}`)})`;
+            return await askQuestionWithDefault(question, DEFAULT_CARTESI_NODE_URL);
+
+        case 'Sepolia':
+            question = `Enter the node URL: (${kleur.blue(`default: ${DEFAULT_SEPOLIA_URL}`)})`;
+            return await askQuestionWithDefault(question, DEFAULT_SEPOLIA_URL);
+        default:
+            return;
+    }
 }
 
 /**
@@ -46,11 +57,44 @@ const askNodeUrl = async () => {
  * @returns selected wallet address
  * 
  */
-const askWallet = async () => {
-    const question = 'Select wallet address: ';
-    const DEFAULT_ADDRESSES = DEFAULT_WALLETS.map(w => w.WA);
-    return await captureKeypressNavigation(question, DEFAULT_ADDRESSES);
+const askWallet = async (chain) => {
+    let question;
+    switch (chain) {
+        case 'foundry':
+            question = 'Select wallet address: ';
+            const DEFAULT_ADDRESSES = DEFAULT_WALLETS.map(w => w.WA);
+            return await captureKeypressNavigation(question, DEFAULT_ADDRESSES);
+
+        case 'Sepolia':
+            // return await askAddress(DEFAULT_WALLETS);
+            question = 'Select wallet interaction type:';
+            const Options = [`Mnemonic ${kleur.red("(UNSAFE)")}`, `Private Key ${kleur.red("(UNSAFE)")}`]
+            let selected_option = await captureKeypressNavigation(question, Options);
+
+            if (selected_option === Options[0]) {
+                return await askMnemonic();
+            } else if (selected_option === Options[1]) {
+                return await askPrivateKey();
+            }
+        default:
+            return;
+    }
+
+
 }
+
+
+const askMnemonic = async () => {
+    const question = 'Enter the mnemonic: ';
+    return await askQuestion(question);
+}
+
+
+const askPrivateKey = async () => {
+    const question = 'Enter the private Key: ';
+    return await askQuestion(question);
+}
+
 
 /**
  * Function to capture the address of the Dapp to interact with

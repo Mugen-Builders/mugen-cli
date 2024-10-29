@@ -3,7 +3,7 @@ const readline = require('readline');
 const { ethers } = require('ethers');
 const { DEFAULT_WALLETS, NONCE_URL, SEND_TRANSACTION_URL } = require('../default');
 const { createWalletClient, http } = require('viem');
-const { privateKeyToAccount } = require('viem/accounts');
+const { privateKeyToAccount, mnemonicToAccount } = require('viem/accounts');
 const { foundry } = require('viem/chains');
 const { rl } = require('../display/index');
 
@@ -50,11 +50,35 @@ function TypedData(app, nonce, data) {
  * @returns a wallet client for the wallet user
  */
 const get_wallet_client = (private_key) => {
-    return createWalletClient({
-        account: privateKeyToAccount(private_key),
-        chain: foundry,
-        transport: http(),
-    })
+    try {
+        return createWalletClient({
+            account: privateKeyToAccount(private_key),
+            chain: foundry,
+            transport: http(),
+        })
+    } catch (err) {
+        console.error(kleur.red('\nError creating wallet client: ') + kleur.yellow(err.message));
+        return null;
+    }
+}
+
+
+/**
+ * Function to create a wallet client for a wallet user with a users Mnemonic
+ * @param mnemonic The mnemonics for the wallet user wants to interact with
+ * @returns a wallet client for the wallet user
+ */
+const wallet_client_froom_mnemonic = async (mnemonic) => {
+    try {
+        return createWalletClient({
+            account: mnemonicToAccount(mnemonic),
+            chain: foundry,
+            transport: http(),
+        })
+    } catch (err) {
+        console.error(kleur.red('\nError creating wallet client from mnemonic: ') + kleur.yellow(err.message));
+        return null;
+    }
 }
 
 
@@ -139,26 +163,52 @@ const get_private_key = (wallet_address) => {
     }
 }
 
-/**
- * Function to send a transaction to the L2 network
- * @param {*} wallet address the user wants to send the transaction from
- * @param {*} application_address address of the application contract
- * @param {*} Input_type type of the input (hex, string)
- * @param {*} input payload the user wants to send
- * @returns the ID of the transaction
- */
-const sendTransaction = async (wallet, application_address, Input_type, input) => {
-    let private_key = get_private_key(wallet);
-    if (!private_key) {
-        rl.close();
-        return;
-    }
+const transact_via_private_key = async (private_key, application_address, Input_type, input) => {
     const wallet_client = get_wallet_client(private_key);
     if (!wallet_client) {
         console.log(kleur.red("Failed to create wallet client"));
         rl.close();
         return;
     };
+    return await sendTransaction(wallet_client, application_address, Input_type, input)
+}
+
+const transact_via_mnemonic = async (mnemonic, application_address, Input_type, input) => {
+    const wallet_client = await wallet_client_froom_mnemonic(mnemonic);
+    if (!wallet_client) {
+        console.log(kleur.red("Failed to create wallet client"));
+        rl.close();
+        return;
+    };
+    return await sendTransaction(wallet_client, application_address, Input_type, input)
+}
+
+
+const transact_via_local = async (wallet_address, application_address, Input_type, input) => {
+    let private_key = get_private_key(wallet_address);
+    if (!private_key) {
+        rl.close();
+        return;
+    }
+
+    const wallet_client = get_wallet_client(private_key);
+    if (!wallet_client) {
+        console.log(kleur.red("Failed to create wallet client"));
+        rl.close();
+        return;
+    };
+    return await sendTransaction(wallet_client, application_address, Input_type, input)
+}
+
+/**
+ * Function to send a transaction to the L2 network
+ * @param {*} wallet_clien wallet private key wrapped in a viem client which the user wants to send the transaction from
+ * @param {*} application_address address of the application contract
+ * @param {*} Input_type type of the input (hex, string)
+ * @param {*} input payload the user wants to send
+ * @returns the ID of the transaction
+ */
+const sendTransaction = async (wallet_client, application_address, Input_type, input) => {
 
     let account;
     try {
@@ -230,6 +280,26 @@ const parse_input = async (Input_type, input) => {
 }
 
 
+const decode_and_relay_tx = async (wallet, application_address, Input_type, input, chain) => {
+    switch (chain) {
+        case 'foundry':
+            return await transact_via_local(wallet, application_address, Input_type, input);
+        case 'Sepolia':
+            let mnemonic_check = wallet.split(" ");
+            if (mnemonic_check.length > 5) {
+                return await transact_via_mnemonic(wallet, application_address, Input_type, input);
+            } else {
+                return await transact_via_private_key(wallet, application_address, Input_type, input);
+            }
+        default:
+            console.log(kleur.red("Invalid chain, please use 'foundry' or 'Sepolia'"));
+            rl.close();
+            return;
+    }
+}
+
+
+
 module.exports = {
-    sendTransaction
+    decode_and_relay_tx
 }
