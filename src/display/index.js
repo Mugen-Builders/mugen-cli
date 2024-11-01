@@ -45,8 +45,8 @@ const askNodeUrl = async (chain) => {
             return await askQuestionWithDefault(question, DEFAULT_CARTESI_NODE_URL);
 
         case 'Sepolia':
-            question = `Enter the node URL: (${kleur.blue(`default: ${DEFAULT_SEPOLIA_URL}`)})`;
-            return await askQuestionWithDefault(question, DEFAULT_SEPOLIA_URL);
+            question = `Enter the node URL: (${kleur.blue(`default: ${DEFAULT_CARTESI_NODE_URL}`)})`;
+            return await askQuestionWithDefault(question, DEFAULT_CARTESI_NODE_URL);
         default:
             return;
     }
@@ -63,6 +63,7 @@ const askWallet = async (chain) => {
         case 'foundry':
             question = 'Select wallet address: ';
             const DEFAULT_ADDRESSES = DEFAULT_WALLETS.map(w => w.WA);
+            // console.log(DEFAULT_ADDRESSES);
             return await captureKeypressNavigation(question, DEFAULT_ADDRESSES);
 
         case 'Sepolia':

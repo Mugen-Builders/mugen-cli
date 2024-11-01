@@ -1,7 +1,7 @@
-const DEFAULT_CARTESI_NODE_URL = "http://localhost:8080";
+const DEFAULT_CARTESI_NODE_URL = "http://127.0.0.1:8080";
 const DEFAULT_SEPOLIA_URL = "https://rpc.sepolia.org";
-const NONCE_URL = "http://localhost:8080/nonce";
-const SEND_TRANSACTION_URL = "http://localhost:8080/submit";
+const NONCE_URL = "http://127.0.0.1:8080/nonce";
+const SEND_TRANSACTION_URL = "http://127.0.0.1:8080/submit";
 const DEFAULT_DAPP_ADDRESS = "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e";
 const DEFAULT_WALLETS =
     [

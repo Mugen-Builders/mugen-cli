@@ -97,12 +97,12 @@ const fetchNonce = async (user_address, application_address) => {
             },
             body: JSON.stringify({ msg_sender: user_address, app_contract: application_address }),
         });
-        // console.log('\n Request status:', response.status);
+
         const responseData = await response.json();
         const nextNonce = responseData.nonce;
         return nextNonce;
     } catch (error) {
-        console.log('\n', kleur.red(`Failed to fetch nonce: ${error}`));
+        console.log('\n', kleur.red(`Failed to fetch nonce: ${error} `));
         rl.close();
         return null;
     }
@@ -179,7 +179,9 @@ const transact_via_private_key = async (private_key, application_address, Input_
         rl.close();
         return;
     };
-    return await sendTransaction(wallet_client, application_address, Input_type, input)
+    const [account] = await wallet_client.requestAddresses();
+
+    return await sendTransaction(wallet_client, account, application_address, Input_type, input)
 }
 
 /**
@@ -197,7 +199,9 @@ const transact_via_mnemonic = async (mnemonic, application_address, Input_type, 
         rl.close();
         return;
     };
-    return await sendTransaction(wallet_client, application_address, Input_type, input)
+    const [account] = await wallet_client.requestAddresses();
+
+    return await sendTransaction(wallet_client, account, application_address, Input_type, input)
 }
 
 
@@ -222,7 +226,8 @@ const transact_via_local = async (wallet_address, application_address, Input_typ
         rl.close();
         return;
     };
-    return await sendTransaction(wallet_client, application_address, Input_type, input)
+
+    return await sendTransaction(wallet_client, wallet_address, application_address, Input_type, input)
 }
 
 /**
@@ -233,22 +238,7 @@ const transact_via_local = async (wallet_address, application_address, Input_typ
  * @param {*} input payload the user wants to send
  * @returns the ID of the transaction
  */
-const sendTransaction = async (wallet_client, application_address, Input_type, input) => {
-
-    let account;
-    try {
-        const [account1] = await wallet_client.requestAddresses();
-        account = account1;
-    } catch (error) {
-        console.log('\n', kleur.red("Failed to request addresses, Please confirm you have an anvil node running: "));
-        rl.close();
-        return;
-    }
-    if (!account) {
-        console.log(kleur.red("Failed to fetch account from client"));
-        rl.close();
-        return;
-    }
+const sendTransaction = async (wallet_client, account, application_address, Input_type, input) => {
 
     const nonce = await fetchNonce(account, application_address);
     if (!nonce) {
