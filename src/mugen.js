@@ -1,7 +1,8 @@
 const kleur = require('kleur');
 const { askChain, askNodeUrl, askWallet, askDappAddress, askInputType, askInput, printOptions, rl } = require('./display/index');
 const { decode_and_relay_tx } = require('./input/index');
-
+const fs = require('fs');
+const path = require('path');
 
 
 
@@ -9,8 +10,16 @@ const { decode_and_relay_tx } = require('./input/index');
 const main = async () => {
     if (process.argv[2] === 'send') {
         await send_transaction();
+    } else if (process.argv.includes('-v') || process.argv.includes('--version') || process.argv.includes('-version') || process.argv.includes('-Version')) {
+        const packageJsonPath = path.join(__dirname, '../package.json');
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+        // Print the version
+        console.log(`Version: ${packageJson.version}`);
+        process.exit(0);
     } else {
         console.log('Usage: mugen-cli send');
+        process.exit(0);
     }
 }
 
