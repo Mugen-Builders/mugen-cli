@@ -241,38 +241,40 @@ const transact_via_local = async (wallet_address, application_address, Input_typ
 const sendTransaction = async (wallet_client, account, application_address, Input_type, input) => {
 
     const nonce = await fetchNonce(account, application_address);
-    if (!nonce) {
-        // console.log(kleur.red("Failed to fetch nonce"));
+    if (nonce >= 0) {
+        let parsed_input = await parse_input(Input_type, input);
+
+        let typedData = new TypedData(application_address, nonce, parsed_input);
+        try {
+            const signature = await wallet_client.signTypedData({
+                account,
+                ...typedData,
+            });
+            const l2data = JSON.parse(
+                JSON.stringify(
+                    {
+                        typedData,
+                        account,
+                        signature,
+                    },
+                    (_, value) =>
+                        typeof value === "bigint" ? parseInt(value.toString()) : value // return everything else unchanged
+                )
+            );
+            const res = await submitTransactionL2(l2data);
+            return res.id;
+
+        } catch (e) {
+            console.log(kleur.red(`${e}`));
+            rl.close();
+            return;
+        }
+    } else {
+        console.log(kleur.red("\nFailed to fetch nonce"));
         rl.close();
         return;
     }
-    let parsed_input = await parse_input(Input_type, input);
 
-    let typedData = new TypedData(application_address, nonce, parsed_input);
-    try {
-        const signature = await wallet_client.signTypedData({
-            account,
-            ...typedData,
-        });
-        const l2data = JSON.parse(
-            JSON.stringify(
-                {
-                    typedData,
-                    account,
-                    signature,
-                },
-                (_, value) =>
-                    typeof value === "bigint" ? parseInt(value.toString()) : value // return everything else unchanged
-            )
-        );
-        const res = await submitTransactionL2(l2data);
-        return res.id;
-
-    } catch (e) {
-        console.log(kleur.red(`${e}`));
-        rl.close();
-        return;
-    }
 }
 
 
