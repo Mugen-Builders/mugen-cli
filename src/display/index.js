@@ -162,7 +162,7 @@ const captureKeypressNavigation = async (question, options) => {
                 process.stdin.setRawMode(false);
                 // process.stdin.removeAllListeners('keypress'); // Clean up keypress listeners
                 console.clear();
-                console.log(`\nYou selected: ${options[index]}`);
+                console.log(`\nYou selected: ${kleur.blue(options[index])}`);
                 resolve(options[index]); // Resolve the promise with the selected option
             }
         });
@@ -200,6 +200,21 @@ const askQuestion = (questionText) => {
     });
 };
 
+
+// Function to ask a user to select the voucher to execute
+const askVoucherIndex = async (all_voucher_payload) => {
+    const question = 'Select Voucher to Execute';
+    const options = all_voucher_payload.map(voucher => {
+        return voucher.option;
+    });
+    let selected_option = await captureKeypressNavigation(question, options);
+    for (let voucher of all_voucher_payload) {
+        if (voucher.option === selected_option) {
+            return voucher.payload;
+        }
+    }
+}
+
 module.exports = {
     askChain,
     askNodeUrl,
@@ -212,5 +227,6 @@ module.exports = {
     displayOptions,
     askQuestionWithDefault,
     askQuestion,
+    askVoucherIndex,
     rl
 };

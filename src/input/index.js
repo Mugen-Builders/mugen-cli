@@ -2,7 +2,7 @@ const kleur = require('kleur');
 const readline = require('readline');
 const { ethers } = require('ethers');
 const { DEFAULT_WALLETS, NONCE_URL, SEND_TRANSACTION_URL } = require('../default');
-const { createWalletClient, http } = require('viem');
+const { createWalletClient, http, createPublicClient } = require('viem');
 const { privateKeyToAccount, mnemonicToAccount } = require('viem/accounts');
 const { foundry } = require('viem/chains');
 const { rl } = require('../display/index');
@@ -58,6 +58,23 @@ const get_wallet_client = (private_key) => {
         })
     } catch (err) {
         console.error(kleur.red('\nError creating wallet client: ') + kleur.yellow(err.message));
+        return null;
+    }
+}
+
+
+/**
+ * Function to create a Public client for a  user
+ * @returns a public client for foundry
+ */
+const get_public_client = () => {
+    try {
+        return createPublicClient({
+            chain: foundry,
+            transport: http(),
+        })
+    } catch (err) {
+        console.error(kleur.red('\nError creating public client: ') + kleur.yellow(err.message));
         return null;
     }
 }
@@ -327,5 +344,7 @@ const decode_and_relay_tx = async (wallet, application_address, Input_type, inpu
 
 
 module.exports = {
-    decode_and_relay_tx
+    decode_and_relay_tx,
+    get_wallet_client,
+    get_public_client
 }

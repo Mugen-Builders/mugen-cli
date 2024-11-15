@@ -2,7 +2,9 @@ const DEFAULT_CARTESI_NODE_URL = "http://127.0.0.1:8080";
 const DEFAULT_SEPOLIA_URL = "https://rpc.sepolia.org";
 const NONCE_URL = "http://127.0.0.1:8080/nonce";
 const SEND_TRANSACTION_URL = "http://127.0.0.1:8080/submit";
-const DEFAULT_DAPP_ADDRESS = "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e";
+const DEFAULT_DAPP_ADDRESS = "0x75135d8ADb7180640d29d822D9AD59E83E8695b2";
+const INPUT_BOX_ADDRESS = "0x593E5BCf894D6829Dd26D0810DA7F064406aebB6";
+const GRAPHQL_URL = `http://127.0.0.1:8080/graphql/${DEFAULT_DAPP_ADDRESS}`;
 const DEFAULT_WALLETS =
     [
         {
@@ -56,5 +58,7 @@ module.exports = {
     NONCE_URL,
     SEND_TRANSACTION_URL,
     DEFAULT_SEPOLIA_URL,
+    GRAPHQL_URL,
+    INPUT_BOX_ADDRESS
 };
 
